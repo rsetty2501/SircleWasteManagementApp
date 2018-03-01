@@ -1,0 +1,17 @@
+<resources>
+    <string name="app_name">Sircle</string>
+    <string name="editor_user_info">Add User Info</string>
+
+    <string name="editor_user_name">Name</string>
+    <string name="editor_user_address">Address</string>
+    <string name="editor_user_reply">Reply</string>
+    <string name="user_reply_sample">Yes/No</string>
+
+    <string name="action_save">Save</string>
+    <string name="action_delete">Delete</string>
+    <string name="action_delete_all_entries">Delete All Entries</string>
+    <string name="route_map">Route Map</string>
+
+    <string name="reply_yes">Yes</string>
+    <string name="reply_no">No</string>
+</resources>

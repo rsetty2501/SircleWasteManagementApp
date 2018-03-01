@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#F0514B</color>
+    <color name="colorPrimaryDark">#C0403C</color>
+    <color name="colorAccent">#F0514B</color>
+
+
+
+    <!-- Primary color for the editor -->
+    <color name="editorColorPrimary">#2D3640</color>
+
+    <!-- Primary dark color for the editor -->
+    <color name="editorColorPrimaryDark">#394450</color>
+
+    <!--Mention the colors for different names based on alphabatical order-->
+    <!-- Color for an user with alphabet A and B -->
+    <color name="alphabet1">#4A7BA7</color>
+    <color name="alphabet2">#04B4B3</color>
+    <color name="alphabet3">#10CAC9</color>
+    <color name="alphabet4">#F5A623</color>
+    <color name="alphabet5">#FF7D50</color>
+    <color name="alphabet6">#FC6644</color>
+    <color name="alphabet7">#E75F40</color>
+    <color name="alphabet8">#E13A20</color>
+    <color name="alphabet9">#D93218</color>
+    <color name="alphabet10plus">#C03823</color>
+
+    <!--This is for the colors of the text inside the user list items-->
+    <!-- Text color for the details of the earthquake in the list item -->
+    <color name="textColorOtherDetails">#B4BAC0</color>
+
+    <!-- Text color for the primary location of the earthquake in the list item -->
+    <color name="textColorUsername">#2B3D4D</color>
+</resources>

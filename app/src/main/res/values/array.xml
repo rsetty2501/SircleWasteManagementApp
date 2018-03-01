@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- These are the options displayed in the reply drop-down Spinner -->
+    <string-array name="array_reply_options">
+        <item>@string/reply_yes</item>
+        <item>@string/reply_no</item>
+    </string-array>
+</resources>
