@@ -77,8 +77,8 @@ public class UserInfoListAdapter  extends ArrayAdapter<UserInfoList>{
     }
 
     private String formatCoordinates(double coordinates) {
-        DecimalFormat magnitudeFormat = new DecimalFormat("0.0000");
-        return magnitudeFormat.format(coordinates);
+        DecimalFormat locationFormat = new DecimalFormat("0.0000");
+        return locationFormat.format(coordinates);
     }
 
     private int getUserColor(String userName){

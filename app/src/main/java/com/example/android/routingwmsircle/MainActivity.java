@@ -1,14 +1,9 @@
 package com.example.android.routingwmsircle;
 
 import android.content.Intent;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.location.Address;
 import android.os.Handler;
-import android.os.Parcel;
-import android.os.Parcelable;
 import android.os.ResultReceiver;
-import android.provider.BaseColumns;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -18,23 +13,15 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import com.example.android.routingwmsircle.data.UserDbHelper;
-import com.example.android.routingwmsircle.data.UserInfo;
-
-import org.osmdroid.util.constants.GeoConstants;
 
 import java.util.ArrayList;
 import java.util.List;
 
+
+
 public class MainActivity extends AppCompatActivity {
 
-    // To access our database, we instantiate our subclass of SQLiteOpenHelper
-    // and pass the context, which is the current activity.
-    protected static UserDbHelper userDbHelper;
-
-    // Declare a variiable for address receiver
+     // Declare a variiable for address receiver
     protected AddressReceiver addressReceiver;
 
     // Text view
@@ -52,6 +39,21 @@ public class MainActivity extends AppCompatActivity {
     // Need to make the address list with Latitude and Longitude for route
     public static List<Address> addressLatLong = new ArrayList<>();
 
+    // List of strings to store the addresses
+    static final ArrayList<String> addressList = new ArrayList<>();
+
+    // List of string to store name of user
+    static final List<String> nameList = new ArrayList<>();
+
+    // List to store the demands of the customer
+    static final List<Integer> demandList = new ArrayList<>();
+
+    // Vehicle capacity
+    static final int vehicleCapacity = 40;
+
+    // store count
+    static int count = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,18 +62,8 @@ public class MainActivity extends AppCompatActivity {
         listView = (ListView) findViewById(R.id.list_view_user);
         displayView = (TextView) findViewById(R.id.text_view_main);
 
-        // Instantiate the database
-        userDbHelper = new UserDbHelper(this, UserDbHelper.DATABASE_NAME,null,UserDbHelper.DATABASE_VERSION);
+        Log.e(GeocodeConstants.TAG_MAIN, "Entered onCreate method!! ");
 
-        // Setup FAB to open EditorActivity
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this, EditorActivity.class);
-                startActivity(intent);
-            }
-        });
 
         // Setup FAB to open Route map
         FloatingActionButton mapFab = (FloatingActionButton) findViewById(R.id.map);
@@ -86,60 +78,76 @@ public class MainActivity extends AppCompatActivity {
         // Instantiate the address receiver
         addressReceiver = new AddressReceiver(null);
 
-        // Create an intent to send the address text and the addressReceiver object
-        Cursor cursor = queryDatabase();
-        if(cursor.getCount() > 0){
+        // Add dummy data
+        queryDatabase();
+
+        Log.e(GeocodeConstants.TAG_MAIN, "Point after query database!! ");
+        Log.e(GeocodeConstants.TAG_MAIN, "Inside count!! " + count);
+        if(count > 0){
+            Log.e(GeocodeConstants.TAG_MAIN, "Inside count!! " + count);
             sendAddressForGeocode();
         }
 
     }
 
-    static protected Cursor queryDatabase(){
+    protected void queryDatabase(){
 
-        // Create and/or open a database to read from it
-        // This is the object where we connect it to the from activity to the database
-        SQLiteDatabase db = userDbHelper.getReadableDatabase();
+//        FirebaseApp.initializeApp(this);
+//        firebaseDatabase = FirebaseDatabase.getInstance();
+//        databaseReference =
+//                firebaseDatabase.getReference("08-Mar-2018");
+//
+//        databaseReference.addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(DataSnapshot dataSnapshot) {
+//                User userValue = null;
+//                for (DataSnapshot userSnapshot : dataSnapshot.getChildren()) {
+//                    userValue = userSnapshot.getValue(User.class);
+//                    if (userValue.getReply().equals("Yes")) {
+//
+//                        addressList.add(userValue.getAddress());
+//                        nameList.add(userValue.getName());
+//                        count = count + 1;
+//
+//                    }
+//                }
+//            }
+//
+//            @Override
+//            public void onCancelled(DatabaseError error) {
+//                    Log.w(GeocodeConstants.TAG_MAIN, "Failed to read value.", error.toException());
+//            }
+//        });
 
-        // Perform query method simiar to "SELECT * FROM pets"
-        // to get a Cursor that contains all rows from the pets table.
-        String[] projection = {
-                UserInfo.UserEntry._ID,
-                UserInfo.UserEntry.COLUMN_USER_NAME,
-                UserInfo.UserEntry.COLUMN_USER_ADDRESS,
-                UserInfo.UserEntry.COLUMN_USER_REPLY
-        };
+        // Adding dummy data manually to check if the app works properly
+        addressList.add("Sernanders väg 4, 752 61 Uppsala");
+        addressList.add("Uppsala");
+        addressList.add("Lägerhyddsvägen 2, 752 37 Uppsala");
+        addressList.add("Flogstavägen 5, 752 73 Uppsala");
+        addressList.add("Kantorsgatan 44, 754 24 Uppsala");
 
-        // Filter for reply with "Yes"
-        String selection = UserInfo.UserEntry.COLUMN_USER_REPLY + "=?";
-        String[] selectionArgs = new String[]{String.valueOf(UserInfo.UserEntry.YES)};
+        nameList.add("Micheal");
+        nameList.add("Tom");
+        nameList.add("Dick");
+        nameList.add("Harry");
+        nameList.add("Patrick");
 
-        Cursor cursor = db.query(UserInfo.UserEntry.TABLE_NAME,
-                projection,
-                selection,
-                selectionArgs,
-                null,
-                null,
-                null);
-        return cursor;
+        // Assuming 1st address is the depot of the trucks
+        demandList.add(20);
+        demandList.add(30);
+        demandList.add(20);
+        demandList.add(10);
+
+        count = 5;
+
+        Log.e(GeocodeConstants.TAG_MAIN, "Count is: " + count);
 
     }
 
+
     private void sendAddressForGeocode(){
 
-        // 1. Extract only those addresses with a reply "Yes"
-
-        // List of strings to store the addresses
-        ArrayList<String> addressList = new ArrayList<>();
-
-        Cursor cursor = queryDatabase();
-
         try{
-            int col_address = cursor.getColumnIndex(UserInfo.UserEntry.COLUMN_USER_ADDRESS);
-
-            // This loop is to iterate through all the rows of the table
-            while (cursor.moveToNext()){
-                addressList.add(cursor.getString(col_address));
-            }
 
             // Now create an intent for the Geocode
             Intent intent = new Intent(getApplicationContext(), GeocodeService.class);
@@ -149,16 +157,17 @@ public class MainActivity extends AppCompatActivity {
             startService(intent);
         }
         finally {
-            cursor.close();
+
         }
 
     }
 
-    // This code is executed when the finish() method is called from EditorActivity
+    // This code is executed when the finish() method is called from Route Map
     @Override
     protected  void onStart(){
         super.onStart();
-        displayDatabaseInfo();
+//        listView.setVisibility(View.INVISIBLE);
+        queryDatabase();
 
     }
 
@@ -168,19 +177,11 @@ public class MainActivity extends AppCompatActivity {
      */
     private void displayDatabaseInfo() {
 
-//            displayView.setText("Display User info with reply Yes" + "\n");
-//            displayView.append(UserInfo.UserEntry.COLUMN_USER_NAME + "\t \t"
-//                    + UserInfo.UserEntry.COLUMN_USER_ADDRESS + "\t \t"
-//                    + "Latitude" + "\t \t"
-//                    + "Longitude" + "\n");
-
         displayView.setText("Add user information to produce optimized route to collect garbage");
     }
 
     private void deleteAllEntries(){
 
-        SQLiteDatabase db = userDbHelper.getWritableDatabase();
-        db.execSQL(UserDbHelper.SQL_DELETE_TABLE);
         listView.setVisibility(View.INVISIBLE);
         displayDatabaseInfo();
     }
@@ -222,31 +223,14 @@ public class MainActivity extends AppCompatActivity {
 
                 addressLatLong = resultData.getParcelableArrayList(GeocodeConstants.RES_ADDRESS);
 
-                Cursor cursor = queryDatabase();
-                int col_name = cursor.getColumnIndex(UserInfo.UserEntry.COLUMN_USER_NAME);
-                int col_address = cursor.getColumnIndex(UserInfo.UserEntry.COLUMN_USER_ADDRESS);
-
-                final List<String> addressList = new ArrayList<>();
-                final List<String> nameList = new ArrayList<>();
-
-                // Store all the database data in the List
-                while (cursor.moveToNext()){
-                    nameList.add(cursor.getString(col_name));
-                    addressList.add(cursor.getString(col_address));
-                }
-
                 for (int i = 0; i < addressLatLong.size(); i++){
-//                            displayView.append(nameList.get(i) + "\t \t"
-//                                + addressList.get(i) + "\t \t"
-//                                + addressLatLong.get(i).getLongitude() + "\t \t"
-//                                + addressLatLong.get(i).getLatitude() + "\n");
 
-                    String n = nameList.get(i);
+                    String name = nameList.get(i);
                     String addList = addressList.get(i);
                     double lat = addressLatLong.get(i).getLatitude();
                     double longitude = addressLatLong.get(i).getLongitude();
 
-                    userInfoLists.add(new UserInfoList(n, addList, lat, longitude));
+                    userInfoLists.add(new UserInfoList(name, addList, lat, longitude));
 
                 }
                 userInfoListAdapter = new UserInfoListAdapter(getApplicationContext(),userInfoLists);
