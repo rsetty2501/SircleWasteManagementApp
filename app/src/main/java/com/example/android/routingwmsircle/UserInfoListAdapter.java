@@ -26,15 +26,16 @@ public class UserInfoListAdapter  extends ArrayAdapter<UserInfoList>{
     private List<UserInfoList> userList = new ArrayList<>();
 
 
-    public UserInfoListAdapter(@NonNull Context context, ArrayList<UserInfoList> objects) {
+    UserInfoListAdapter(@NonNull Context context, ArrayList<UserInfoList> objects) {
         super(context, 0, objects);
         mContext = context;
         userList = objects;
     }
 
     // The listView is the caller in this case to the getView() method
+    @NonNull
     @Override
-    public View getView(int position, View convertView, ViewGroup parent){
+    public View getView(int position, View convertView, @NonNull ViewGroup parent){
 
         View listItem = convertView;
         if(listItem == null)
@@ -55,22 +56,22 @@ public class UserInfoListAdapter  extends ArrayAdapter<UserInfoList>{
         gradientDrawable.setColor(userColor);
 
         // User name
-        TextView userName = (TextView) listItem.findViewById(R.id.textview_name);
+        TextView userName = listItem.findViewById(R.id.textview_name);
         userName.setText(currentUser.getName());
         Log.v(GeocodeConstants.TAG_MAIN,"name:" + currentUser.getName());
 
 
         // User address
-        TextView userAdd = (TextView) listItem.findViewById(R.id.textView_address);
+        TextView userAdd = listItem.findViewById(R.id.textView_address);
         userAdd.setText(currentUser.getAddress());
         Log.v(GeocodeConstants.TAG_MAIN,"address:" + currentUser.getAddress());
 
         // Latitude of the user's address
-        TextView userLat = (TextView) listItem.findViewById(R.id.textView_latitude);
+        TextView userLat = listItem.findViewById(R.id.textView_latitude);
         userLat.setText(formatCoordinates(currentUser.getAddress_latitude()));
 
         // Longitude of the user's address
-        TextView userLong = (TextView) listItem.findViewById(R.id.textView_longitude);
+        TextView userLong = listItem.findViewById(R.id.textView_longitude);
         userLong.setText(formatCoordinates(currentUser.getAddress_longitude()));
 
         return listItem;

@@ -57,16 +57,18 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setLogo(R.drawable.ic_route);
+        getSupportActionBar().setDisplayUseLogoEnabled(true);
         setContentView(R.layout.activity_main);
 
-        listView = (ListView) findViewById(R.id.list_view_user);
-        displayView = (TextView) findViewById(R.id.text_view_main);
+        listView = findViewById(R.id.list_view_user);
+        displayView = findViewById(R.id.text_view_main);
 
         Log.e(GeocodeConstants.TAG_MAIN, "Entered onCreate method!! ");
 
-
         // Setup FAB to open Route map
-        FloatingActionButton mapFab = (FloatingActionButton) findViewById(R.id.map);
+        FloatingActionButton mapFab = findViewById(R.id.map);
         mapFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -120,12 +122,14 @@ public class MainActivity extends AppCompatActivity {
 //        });
 
         // Adding dummy data manually to check if the app works properly
+        addressList.add("Kvarnbolund 9, 752 63 Uppsala");
         addressList.add("Sernanders väg 4, 752 61 Uppsala");
         addressList.add("Uppsala");
         addressList.add("Lägerhyddsvägen 2, 752 37 Uppsala");
         addressList.add("Flogstavägen 5, 752 73 Uppsala");
         addressList.add("Kantorsgatan 44, 754 24 Uppsala");
 
+        nameList.add("Ragn-Sells");
         nameList.add("Micheal");
         nameList.add("Tom");
         nameList.add("Dick");
@@ -137,8 +141,9 @@ public class MainActivity extends AppCompatActivity {
         demandList.add(30);
         demandList.add(20);
         demandList.add(10);
+        demandList.add(5);
 
-        count = 5;
+        count = 6;
 
         Log.e(GeocodeConstants.TAG_MAIN, "Count is: " + count);
 
@@ -223,6 +228,7 @@ public class MainActivity extends AppCompatActivity {
 
                 addressLatLong = resultData.getParcelableArrayList(GeocodeConstants.RES_ADDRESS);
 
+                assert addressLatLong != null;
                 for (int i = 0; i < addressLatLong.size(); i++){
 
                     String name = nameList.get(i);

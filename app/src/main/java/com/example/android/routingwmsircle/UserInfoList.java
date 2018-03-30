@@ -11,7 +11,7 @@ public class UserInfoList {
     private double address_latitude;
     private double address_longitude;
 
-    public UserInfoList(String name, String address, double address_latitude, double address_longitude){
+    UserInfoList(String name, String address, double address_latitude, double address_longitude){
         this.name = name;
         this.address = address;
         this.address_latitude = address_latitude;
@@ -34,7 +34,7 @@ public class UserInfoList {
         this.address = address;
     }
 
-    public double getAddress_latitude() {
+    double getAddress_latitude() {
         return address_latitude;
     }
 
@@ -42,7 +42,7 @@ public class UserInfoList {
         this.address_latitude = address_latitude;
     }
 
-    public double getAddress_longitude() {
+    double getAddress_longitude() {
         return address_longitude;
     }
 
