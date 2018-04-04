@@ -15,13 +15,16 @@ import java.util.TreeMap;
 
 public final class Clustering {
 
+    private static Map<String,Collection<Integer>> mapClusterNodes = new HashMap<>();
+    private static List<Address> addressListNew;
 
     private Clustering(){
 
     }
 
-    public  static Map<String,List<Address>> sweepAlgoclustering(List<Address> address){
+    public  static Map<String,Collection<Integer>> sweepAlgoclustering(List<Address> address){
 
+        addressListNew = address;
         double angle;
         // Map demand to polar angle
         Map<Double,Integer> mapDP = new HashMap<>();
@@ -65,7 +68,7 @@ public final class Clustering {
             }
         }
 
-        Map<String,Collection<Integer>> mapClusterNodes = new HashMap<>();
+
         for(int i = 0; i < c + 1; i++){
             String clust = "cluster" + i;
             mapClusterNodes.put(clust,multimap.get(clust));
@@ -91,7 +94,24 @@ public final class Clustering {
             Log.e(GeocodeConstants.TAG_ROUTE, "Final address : " + entry.getKey() + " : " + entry.getValue().size());
         }
 
-        return mapClusterAddress;
+        return mapClusterNodes;
+    }
 
+    public  static Map<String,List<Address>> sweepAlgosegmentedAddress(){
+        Map<String,List<Address>> mapClusterAddress = new HashMap<>();
+
+
+        for(Map.Entry<String,Collection<Integer>> entry: mapClusterNodes.entrySet()){
+//            Log.e(GeocodeConstants.TAG_ROUTE, entry.getKey() + " : " + entry.getValue());
+            List<Integer> list = new ArrayList<>(entry.getValue());
+            List<Address> addressList = new ArrayList<>();
+            for(int i = 0; i < list.size(); i++){
+                int x = list.get(i) + 1;
+                Log.e(GeocodeConstants.TAG_ROUTE, "New list : " + x);
+                addressList.add(addressListNew.get(list.get(i) + 1));
+                mapClusterAddress.put(entry.getKey(),addressList);
+            }
+        }
+        return mapClusterAddress;
     }
 }

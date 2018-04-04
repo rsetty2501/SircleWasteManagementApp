@@ -4,19 +4,20 @@ import android.content.Intent;
 import android.location.Address;
 import android.os.Handler;
 import android.os.ResultReceiver;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
-
+import java.util.Map;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -24,17 +25,15 @@ public class MainActivity extends AppCompatActivity {
      // Declare a variiable for address receiver
     protected AddressReceiver addressReceiver;
 
-    // Text view
-    TextView displayView;
-
     // List view
     ListView listView;
 
-    // array list for user information
-    ArrayList<UserInfoList> userInfoLists = new ArrayList<>();
+
+    // array list for cluster user information
+    ArrayList<ClusterUserList> clusterUserLists = new ArrayList<>();
 
     // Create an user info adapter variable
-    UserInfoListAdapter userInfoListAdapter;
+    RouteAdapter routeAdapter;
 
     // Need to make the address list with Latitude and Longitude for route
     public static List<Address> addressLatLong = new ArrayList<>();
@@ -51,31 +50,18 @@ public class MainActivity extends AppCompatActivity {
     // Vehicle capacity
     static final int vehicleCapacity = 40;
 
+    // Create a variable to map cluster and list of Nodes
+    Map<String,Collection<Integer>> mapClusterNodes = new HashMap<>();
+
     // store count
     static int count = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
-        getSupportActionBar().setLogo(R.drawable.ic_route);
-        getSupportActionBar().setDisplayUseLogoEnabled(true);
         setContentView(R.layout.activity_main);
 
-        listView = findViewById(R.id.list_view_user);
-        displayView = findViewById(R.id.text_view_main);
-
-        Log.e(GeocodeConstants.TAG_MAIN, "Entered onCreate method!! ");
-
-        // Setup FAB to open Route map
-        FloatingActionButton mapFab = findViewById(R.id.map);
-        mapFab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this, RouteMap.class);
-                startActivity(intent);
-            }
-        });
+        listView = findViewById(R.id.list_view_route);
 
         // Instantiate the address receiver
         addressReceiver = new AddressReceiver(null);
@@ -182,7 +168,7 @@ public class MainActivity extends AppCompatActivity {
      */
     private void displayDatabaseInfo() {
 
-        displayView.setText("Add user information to produce optimized route to collect garbage");
+//        displayView.setText("Add user information to produce optimized route to collect garbage");
     }
 
     private void deleteAllEntries(){
@@ -228,37 +214,54 @@ public class MainActivity extends AppCompatActivity {
 
                 addressLatLong = resultData.getParcelableArrayList(GeocodeConstants.RES_ADDRESS);
 
+                // Create clusters for segmentation
                 assert addressLatLong != null;
-                for (int i = 0; i < addressLatLong.size(); i++){
+                mapClusterNodes = Clustering.sweepAlgoclustering(addressLatLong);
 
-                    String name = nameList.get(i);
-                    String addList = addressList.get(i);
-                    double lat = addressLatLong.get(i).getLatitude();
-                    double longitude = addressLatLong.get(i).getLongitude();
+                for(Map.Entry<String,Collection<Integer>> entry: mapClusterNodes.entrySet()){
+                    List<Integer> list = new ArrayList<>(entry.getValue());
+                    String cluster = entry.getKey();
+                    ArrayList<UserInfoList> userInfoLists = new ArrayList<>();
 
-                    userInfoLists.add(new UserInfoList(name, addList, lat, longitude));
-
+                    for(int i = 0; i < list.size(); i++){
+                        int pos = list.get(i)+1;
+                        String name = nameList.get(pos);
+                        String addList = addressList.get(pos);
+                        double lat = addressLatLong.get(pos).getLatitude();
+                        double longitude = addressLatLong.get(pos).getLongitude();
+                        userInfoLists.add(new UserInfoList(name, addList, lat, longitude));
+                    }
+                    clusterUserLists.add(new ClusterUserList(cluster,userInfoLists));
                 }
-                userInfoListAdapter = new UserInfoListAdapter(getApplicationContext(),userInfoLists);
+
+                routeAdapter = new RouteAdapter(getApplicationContext(), clusterUserLists);
 
                 // Run the operation on the UI thread
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-//                        displayDatabaseInfo();
-                        displayView.setVisibility(View.INVISIBLE);
-                        // Set the TextView with Latitude and Longitude
-                        // This loop is to iterate through all the rows of the table
+//                        displayView.setVisibility(View.INVISIBLE);
 
-                        if(userInfoListAdapter != null){
-                            Log.v(GeocodeConstants.TAG_MAIN,"Inside adapter!");
-                            listView.setAdapter(userInfoListAdapter);
+                        if(routeAdapter != null){
+                            listView.setAdapter(routeAdapter);
+                        }
 
-                            Log.v(GeocodeConstants.TAG_MAIN,"Inside adapter 2!");
-                        }
-                        else{
-                            Log.v(GeocodeConstants.TAG_MAIN,"Outside adapter!");
-                        }
+                        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                            @Override
+                            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+
+                                ClusterUserList clusterUserList = routeAdapter.getItem(i);
+                                ArrayList<UserInfoList> userInfo;
+                                assert clusterUserList != null;
+                                String clusterName = clusterUserList.getCluster();
+                                userInfo = clusterUserList.getUserInfoList();
+
+                                Intent intent = new Intent(MainActivity.this, SegmentedUsers.class);
+                                intent.putExtra(GeocodeConstants.CLUSTER_NAME,clusterName);
+                                intent.putExtra(GeocodeConstants.CLUSTER_USER_LIST,userInfo);
+                                startActivity(intent);
+                            }
+                        });
 
                     }
                 });
@@ -267,8 +270,7 @@ public class MainActivity extends AppCompatActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-//                        displayDatabaseInfo();
-                        displayView.append("No Data!");
+//                        displayView.append("No Data!");
                     }
                 });
             }

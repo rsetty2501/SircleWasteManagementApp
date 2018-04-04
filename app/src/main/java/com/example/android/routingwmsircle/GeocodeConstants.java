@@ -16,4 +16,10 @@ public class GeocodeConstants {
     public final static String ADDRESS_RECEIVER = "addressReceiver";
     public final static String RES_ADDRESS = "addressResult";
     public final static String MESSAGE = "message";
+    public final static String CLUSTER_USER_LIST = "clusteruserList";
+    public final static String BUNDLE = "bundle";
+    public final static String SEGMENTED_USER = "segmentedUser";
+    public final static String CLUSTER_NAME = "clusterName";
+    public final static String CLUSTER_NAME1 = "clusterName1";
+
 }

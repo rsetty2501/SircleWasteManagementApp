@@ -14,7 +14,6 @@ import android.widget.TextView;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
-import android.graphics.drawable.GradientDrawable;
 
 /**
  * Created by Rahul Setty on 2/22/2018.

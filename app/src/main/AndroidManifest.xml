@@ -23,14 +23,24 @@
         </activity>
 
         <activity
-            android:name=".RouteMap"
-            android:label="@string/route_map"
+            android:name=".SegmentedUsers"
             android:theme="@style/EditorTheme"
             android:parentActivityName=".MainActivity" >
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MainActivity" />
+        </activity>
+
+        <activity
+            android:name=".RouteMap"
+            android:label="@string/route_map"
+            android:theme="@style/EditorTheme"
+            android:parentActivityName=".SegmentedUsers" >
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".SegmentedUsers" />
         </activity>
 
 

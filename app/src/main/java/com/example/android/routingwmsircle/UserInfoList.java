@@ -1,10 +1,12 @@
 package com.example.android.routingwmsircle;
 
+import java.io.Serializable;
+
 /**
  * Created by Rahul Setty on 2/22/2018.
  */
 
-public class UserInfoList {
+public class UserInfoList implements Serializable{
 
     private String name;
     private String address;
@@ -30,24 +32,12 @@ public class UserInfoList {
         return address;
     }
 
-    public void setAddress(String address) {
-        this.address = address;
-    }
-
     double getAddress_latitude() {
         return address_latitude;
     }
 
-    public void setAddress_latitude(double address_latitude) {
-        this.address_latitude = address_latitude;
-    }
-
     double getAddress_longitude() {
         return address_longitude;
-    }
-
-    public void setAddress_longitude(double address_longitude) {
-        this.address_longitude = address_longitude;
     }
 
 }

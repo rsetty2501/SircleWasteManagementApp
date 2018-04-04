@@ -1,52 +1,34 @@
 package com.example.android.routingwmsircle;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.location.Address;
-import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.RequiresApi;
-import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.util.SparseArray;
 import android.view.MenuItem;
 import android.widget.TextView;
 
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Multimap;
-
-import org.mapsforge.map.datastore.MultiMapDataStore;
 import org.osmdroid.api.IMapController;
-import org.osmdroid.bonuspack.routing.GraphHopperRoadManager;
 import org.osmdroid.bonuspack.routing.OSRMRoadManager;
 import org.osmdroid.bonuspack.routing.Road;
 import org.osmdroid.bonuspack.routing.RoadManager;
 import org.osmdroid.config.Configuration;
-import org.osmdroid.tileprovider.tilesource.QuadTreeTileSource;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.ItemizedIconOverlay;
 import org.osmdroid.views.overlay.OverlayItem;
-import org.osmdroid.views.overlay.PathOverlay;
 import org.osmdroid.views.overlay.Polyline;
 import org.osmdroid.views.overlay.ScaleBarOverlay;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
 
 
 /**
@@ -73,6 +55,9 @@ public class RouteMap extends AppCompatActivity{
     // test address
     List<Address> testAddress = new ArrayList<>();
 
+    String clusterName;
+
+
     MapView mapView = null;
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
@@ -86,12 +71,12 @@ public class RouteMap extends AppCompatActivity{
         setContentView(R.layout.activity_mapview);
         textView = findViewById(R.id.text_view_map);
 
-
+        clusterName = getIntent().getStringExtra(GeocodeConstants.CLUSTER_NAME1);
         // Initialize the address
         address = MainActivity.addressLatLong;
 
         // Create clusters for segmentation
-        mapClusterAddress = Clustering.sweepAlgoclustering(address);
+        mapClusterAddress = Clustering.sweepAlgosegmentedAddress();
 
         // View of uppsala in map
         uppsalaMapView();
@@ -103,7 +88,7 @@ public class RouteMap extends AppCompatActivity{
         scaleBar();
 
         for(Map.Entry<String,List<Address>> entry: mapClusterAddress.entrySet()){
-            if(entry.getKey().equals("cluster2")){
+            if(entry.getKey().equals(clusterName)){
                 testAddress.add(address.get(0));
                 for(int i = 0; i < entry.getValue().size(); i++){
                     testAddress.add(entry.getValue().get(i));
@@ -180,9 +165,21 @@ public class RouteMap extends AppCompatActivity{
         // Check if there is at least 2 entry data in the database to make the route
         if(MainActivity.count > 1){
 
-            for(int i = 0; i < address.size() ; i++){
-                overlayItems.add(new OverlayItem("","Testing Location",
-                        new GeoPoint(address.get(i).getLatitude(), address.get(i).getLongitude())));
+//            for(int i = 0; i < address.size() ; i++){
+//                overlayItems.add(new OverlayItem("","Testing Location",
+//                        new GeoPoint(address.get(i).getLatitude(), address.get(i).getLongitude())));
+//            }
+
+            overlayItems.add(new OverlayItem("","Testing Location",
+                        new GeoPoint(address.get(0).getLatitude(), address.get(0).getLongitude())));
+
+            for(Map.Entry<String,List<Address>> entry: mapClusterAddress.entrySet()){
+                if(entry.getKey().equals(clusterName)){
+                    for(int i = 0; i < entry.getValue().size(); i++){
+                        overlayItems.add(new OverlayItem("","Testing Location",
+                                new GeoPoint(entry.getValue().get(i).getLatitude(), entry.getValue().get(i).getLongitude())));
+                    }
+                }
             }
 
             ItemizedIconOverlay<OverlayItem> anotherItemizedIconOverlay
